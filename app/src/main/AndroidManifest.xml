@@ -35,9 +35,8 @@
 			</intent-filter>
 		</service>
 
-		<service android:name=".TimerService"
-			android:exported="true"
-			>
+		<service android:name=".DNDTimerService"
+			android:exported="true">
 		</service>
 
 		<receiver android:name=".InterruptionFilterChangeReceiver" android:exported="true">

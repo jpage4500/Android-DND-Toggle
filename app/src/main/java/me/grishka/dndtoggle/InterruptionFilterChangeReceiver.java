@@ -5,13 +5,19 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.service.quicksettings.TileService;
+import android.util.Log;
 
-public class InterruptionFilterChangeReceiver extends BroadcastReceiver{
-	@Override
-	public void onReceive(Context context, Intent intent){
-		if(DNDTileService.current!=null)
-			DNDTileService.current.updateTile();
-		else
-			TileService.requestListeningState(context, new ComponentName(context, DNDTileService.class));
-	}
+public class InterruptionFilterChangeReceiver extends BroadcastReceiver {
+    private static final String TAG = "DNDTileService";
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (DNDTileService.current != null) {
+            Log.d(TAG, "onReceive: update tile");
+            DNDTileService.current.updateTile();
+        } else {
+            Log.d(TAG, "onReceive: not running");
+            TileService.requestListeningState(context, new ComponentName(context, DNDTileService.class));
+        }
+    }
 }

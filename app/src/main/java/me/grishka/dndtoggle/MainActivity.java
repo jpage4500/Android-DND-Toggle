@@ -19,7 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
-    private static final String TAG = "DNDTileService";
+    private static final String TAG = "MainActivity";
 
     private Button openSettingsBtn, addTileBtn, durationBtn;
     private TextView permissionGrantedText, tileAddedText;
@@ -62,6 +62,8 @@ public class MainActivity extends Activity {
     // all possible duration values (resource ID -> duration in ms)
     Integer[][] VALUE_ARR = new Integer[][]{
         {R.string.time_disabled, 0},
+        {R.string.time_5_mins, 5 * 60 * 1000},
+        {R.string.time_15_mins, 15 * 60 * 1000},
         {R.string.time_30_mins, 30 * 60 * 1000},
         {R.string.time_1_hour, 60 * 60 * 1000},
         {R.string.time_5_hours, 5 * 60 * 60 * 1000},
@@ -70,18 +72,23 @@ public class MainActivity extends Activity {
     private void showDurationDialog() {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder.setTitle(R.string.duration);
+
+        long currentDurationMs = DNDTileService.getDuration(this);
         String[] options = new String[VALUE_ARR.length];
+        int selectedIndex = 0;
         for (int i = 0; i < VALUE_ARR.length; i++) {
             options[i] = getString(VALUE_ARR[i][0]);
+            if (currentDurationMs == VALUE_ARR[i][1]) {
+                selectedIndex = i;
+            }
         }
 
-        dialogBuilder.setSingleChoiceItems(options, -1, null);
+        dialogBuilder.setSingleChoiceItems(options, selectedIndex, null);
         dialogBuilder.setPositiveButton(R.string.ok, (dialog, which) -> {
             AlertDialog alert = (AlertDialog) dialog;
             int whichItem = alert.getListView().getCheckedItemPosition();
             if (whichItem < 0 || whichItem >= VALUE_ARR.length) return;
             Integer durationMs = VALUE_ARR[whichItem][1];
-            Log.d(TAG, "BUTTON: " + whichItem + ", duration: " + durationMs);
             DNDTileService.setDuration(this, durationMs);
             updateButtons();
             TileService.requestListeningState(this, new ComponentName(this, DNDTileService.class));

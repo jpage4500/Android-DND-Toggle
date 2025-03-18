@@ -11,43 +11,42 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class TimerService extends Service {
-    private static final String TAG = "DNDTileService";
+public class DNDTimerService extends Service {
+    private static final String TAG = "DNDTimerService";
 
     private ScheduledExecutorService scheduler;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "TimerService:onCreate");
+        Log.d(TAG, "onCreate");
         scheduler = Executors.newScheduledThreadPool(1);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "TimerService:onDestroy");
+        Log.d(TAG, "onDestroy");
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "TimerService:onBind");
         return null;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "TimerService:onStartCommand");
+        Log.d(TAG, "onStartCommand");
 
         scheduler.scheduleWithFixedDelay(() -> {
-            Log.d(TAG, "TimerService:scheduleWithFixedDelay:RUN");
+            Log.d(TAG, "scheduleWithFixedDelay:RUN");
             try {
                 TileService.requestListeningState(this, new ComponentName(this, DNDTileService.class));
             } catch (Exception e) {
-                Log.e(TAG, "TimerService:scheduleWithFixedDelay:Exception", e);
+                Log.e(TAG, "scheduleWithFixedDelay:Exception", e);
             }
         }, 1, 1, TimeUnit.MINUTES);
 
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 }

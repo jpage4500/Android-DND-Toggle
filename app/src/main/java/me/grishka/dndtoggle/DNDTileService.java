@@ -18,22 +18,9 @@ public class DNDTileService extends TileService {
     public static DNDTileService current;
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy");
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.d(TAG, "onCreate");
-    }
-
-    @Override
     public void onStartListening() {
         current = this;
         super.onStartListening();
-        Log.d(TAG, "onStartListening");
         updateTile();
     }
 
@@ -41,7 +28,6 @@ public class DNDTileService extends TileService {
     public void onStopListening() {
         current = null;
         super.onStopListening();
-        Log.d(TAG, "onStopListening");
     }
 
     @Override
@@ -85,26 +71,30 @@ public class DNDTileService extends TileService {
             tile.setIcon(Icon.createWithResource(this, R.drawable.ic_do_not_disturb));
         } else {
             boolean isDND = nm.getCurrentInterruptionFilter() == NotificationManager.INTERRUPTION_FILTER_PRIORITY;
+            if (!isDND) {
+                // remove start time if disabled from user click *or* user turning off DND via other method
+                setStartTime(false);
+            }
             long startTimeMs = getStartTime();
             long durationMs = getDuration(this);
             if (isDND && startTimeMs > 0 && durationMs > 0) {
                 long ellapsedMs = System.currentTimeMillis() - startTimeMs;
                 long remainingMs = durationMs - ellapsedMs;
-                // TODO: when initially set, round up
-                long remainingMins = TimeUnit.MILLISECONDS.toMinutes(remainingMs);
-                Log.d(TAG, remainingMins + " mins " + remainingMs + "ms");
+                // add 1 minute so "59 mins, 55 secs" = "60 mins"
+                long remainingMins = TimeUnit.MILLISECONDS.toMinutes(remainingMs) + 1;
                 if (remainingMs < 0) {
                     // time up - disable DND
+                    Log.d(TAG, "updateTile: times up!");
                     setStartTime(false);
                     startTimerService(false);
+                    // this should cause InterruptionFilterChangeReceiver to get notified updating the UI
                     nm.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL);
                     tile.setSubtitle(null);
                 } else {
+                    Log.d(TAG, "updateTile: ms: " + remainingMs + ", mins: " + remainingMins);
                     tile.setSubtitle(remainingMins + " mins left");
                 }
             } else {
-                // remove start time if disabled from user click *or* user turning off DND via other method
-                setStartTime(false);
                 tile.setSubtitle(null);
             }
             tile.setState(isDND ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
@@ -114,6 +104,7 @@ public class DNDTileService extends TileService {
     }
 
     public static void setDuration(Context context, long durationMs) {
+        Log.d(TAG, "setDuration: durationMs: " + durationMs);
         SharedPreferences.Editor editor = getSharedPrefs(context).edit();
         editor.putLong(PREF_DURATION_MS, durationMs);
         editor.apply();
@@ -124,7 +115,7 @@ public class DNDTileService extends TileService {
     }
 
     private void startTimerService(boolean isDND) {
-        Intent intent = new Intent(this, TimerService.class);
+        Intent intent = new Intent(this, DNDTimerService.class);
         try {
             if (isDND) startService(intent);
             else stopService(intent);
