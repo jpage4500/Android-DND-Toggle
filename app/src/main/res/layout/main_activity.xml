@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:fitsSystemWindows="true">
 
 	<ScrollView
@@ -85,6 +86,29 @@
 					android:drawableTint="#00BF2E"
 					android:drawablePadding="4dp"
 					android:text="@string/tile_added"/>
+			</FrameLayout>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="24dp"
+				android:layout_marginBottom="16dp"
+				android:textSize="17sp"
+				android:lineSpacingMultiplier="1.2"
+				android:textColor="?android:textColorPrimary"
+				android:text="@string/intro_timout"/>
+
+			<FrameLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+				<Button
+					android:id="@+id/duration_btn"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					tools:text="Duration: 1 hour"
+					/>
+
 			</FrameLayout>
 
 		</LinearLayout>

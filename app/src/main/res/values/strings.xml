@@ -9,4 +9,12 @@
 	<string name="tile_added">Tile added</string>
 	<string name="do_not_disturb">Do not disturb</string>
 	<string name="tile_no_permission">No permission</string>
+	<string name="intro_timout">3. Auto disable \"Do not disturb\" mode after this duration:</string>
+	<string name="duration">Duration</string>
+	<string name="duration_length">Duration: %d</string>
+	<string name="time_disabled">Until you turn off</string>
+	<string name="time_30_mins">30 minutes</string>
+	<string name="time_1_hour">1 hour</string>
+	<string name="time_5_hours">5 hours</string>
+	<string name="ok">Ok</string>
 </resources>
