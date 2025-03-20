@@ -13,8 +13,10 @@ import java.util.concurrent.TimeUnit;
 
 public class DNDTileService extends TileService {
     private static final String TAG = "DNDTileService";
+
     public static final String PREF_START_TIME = "startTimeMs";
     public static final String PREF_DURATION_MS = "durationMs";
+
     public static DNDTileService current;
 
     @Override
@@ -33,6 +35,7 @@ public class DNDTileService extends TileService {
     @Override
     public void onClick() {
         super.onClick();
+        Log.d(TAG, "onClick");
         NotificationManager nm = getSystemService(NotificationManager.class);
         boolean isDND = nm.getCurrentInterruptionFilter() == NotificationManager.INTERRUPTION_FILTER_PRIORITY;
         // toggle state
@@ -74,8 +77,9 @@ public class DNDTileService extends TileService {
             if (!isDND) {
                 // remove start time if disabled from user click *or* user turning off DND via other method
                 setStartTime(false);
+                startTimerService(false);
             }
-            long startTimeMs = getStartTime();
+            long startTimeMs = getStartTime(this);
             long durationMs = getDuration(this);
             if (isDND && startTimeMs > 0 && durationMs > 0) {
                 long ellapsedMs = System.currentTimeMillis() - startTimeMs;
@@ -115,9 +119,11 @@ public class DNDTileService extends TileService {
     }
 
     private void startTimerService(boolean isDND) {
+        Log.d(TAG, "startTimerService: isDND: " + isDND);
+
         Intent intent = new Intent(this, DNDTimerService.class);
         try {
-            if (isDND) startService(intent);
+            if (isDND) startForegroundService(intent);
             else stopService(intent);
         } catch (Exception e) {
             Log.e(TAG, "startTimerService: isDND: " + isDND + " Exception: " + e.getMessage());
@@ -134,8 +140,8 @@ public class DNDTileService extends TileService {
         editor.apply();
     }
 
-    private long getStartTime() {
-        return getSharedPrefs(this).getLong(PREF_START_TIME, 0);
+    public static long getStartTime(Context context) {
+        return getSharedPrefs(context).getLong(PREF_START_TIME, 0);
     }
 
     private static SharedPreferences getSharedPrefs(Context context) {

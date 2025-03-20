@@ -8,7 +8,7 @@ import android.service.quicksettings.TileService;
 import android.util.Log;
 
 public class InterruptionFilterChangeReceiver extends BroadcastReceiver {
-    private static final String TAG = "DNDTileService";
+    private static final String TAG = "InterruptionFilterChangeReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
