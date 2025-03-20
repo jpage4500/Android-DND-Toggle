@@ -41,10 +41,14 @@ public class DNDTileService extends TileService {
         // toggle state
         isDND = !isDND;
         nm.setInterruptionFilter(isDND ? NotificationManager.INTERRUPTION_FILTER_PRIORITY : NotificationManager.INTERRUPTION_FILTER_ALL);
-        startTimerService(isDND);
-        if (isDND) {
+
+        // if duration is set, start a timer to turn off DND
+        long durationMs = getDuration(this);
+        if (isDND && durationMs > 0) {
             // set start time
             setStartTime(true);
+            // start timer service
+            startTimerService(isDND);
         }
         updateTile();
     }
@@ -120,7 +124,6 @@ public class DNDTileService extends TileService {
 
     private void startTimerService(boolean isDND) {
         Log.d(TAG, "startTimerService: isDND: " + isDND);
-
         Intent intent = new Intent(this, DNDTimerService.class);
         try {
             if (isDND) startForegroundService(intent);
