@@ -23,7 +23,8 @@
 
         <activity
             android:name=".SettingsRedirectActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/TransparentDialog">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
             </intent-filter>
